@@ -12,7 +12,6 @@ class Product(Schema):
     description: str
 
 
-
 class Offer(Schema):
     id: str
     price: NonNegativeFloat

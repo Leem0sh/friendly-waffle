@@ -3,14 +3,14 @@
 
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Dict
 
 from django.conf import settings
 
 
-def get_bearer() -> Tuple[str, str]:
+def get_headers() -> Dict[str, str]:
     """
     Returns bearer for applifting api
     :return:
     """
-    return "Authorization", f"Bearer: {settings.SECRET_TOKEN}"
+    return {"Bearer": settings.SECRET_TOKEN}

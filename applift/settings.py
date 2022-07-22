@@ -9,16 +9,19 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import os
 from pathlib import Path
+
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-env = os.environ.get
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+
+env = environ.Env()
+env.read_env(str(BASE_DIR / ".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-^0q5$i@xom23%5$_0^gamweg*s8$+#5s#1*6@2@_4*j7uedo5e'
@@ -79,11 +82,11 @@ WSGI_APPLICATION = 'applift.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydatabase',
-        'USER': 'mydatabaseuser',
-        'PASSWORD': 'mypassword',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -131,6 +134,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # TODO Naming
 # Secrets
 SECRET_TOKEN = env('SECRET_TOKEN')
-
+NINJA_BEARER_TOKEN = env('NINJA_BEARER_TOKEN')
 # Base
 APPLIFT_BASE_URL = "https://applifting-python-excercise-ms.herokuapp.com/api/v1"

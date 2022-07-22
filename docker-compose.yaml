@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - DATABASE_NAME=pg
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '6543:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+#  api:
+#    container_name: api
+#    build:
+#      context: ./
+#      target: production
+#    image: api
+#    depends_on:
+#      - db
+#    ports:
+#      - 8000:8000
+#    environment:
+#      NODE_ENV: production
+#    links:
+#      - db
+#    volumes:
+#      - './:/src'
+volumes:
+  db:
+    driver: local

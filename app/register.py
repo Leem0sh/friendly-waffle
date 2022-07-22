@@ -6,12 +6,12 @@ from __future__ import annotations
 import httpx
 from django.conf import settings
 
-from app.schemas import Product
-from applift.auth import get_bearer
+from app.schemas import Product, RegisterResponse
+from applift.auth import get_headers
 
 
 # TODO what if call fails?
-def register_new_product(product: Product):
+def register_new_product(product: Product) -> RegisterResponse:
     data = {
         "id": product.id,
         "name": product.name,
@@ -22,7 +22,7 @@ def register_new_product(product: Product):
         response = http_client.post(
             url=f"{settings.APPLIFT_BASE_URL.rstrip('/')}/products/register",
             json=data,
-            auth=get_bearer()
+            headers=get_headers()
         )
         response.raise_for_status()
         return response.json()

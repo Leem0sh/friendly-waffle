@@ -13,7 +13,7 @@ class Product(models.Model):
 
 # TODO UUID field / adjust max len?
 class Offer(models.Model):
-    id = models.CharField(max_length=255)
+    id = models.CharField(max_length=255, primary_key=True)
     price = models.FloatField()
     items_in_stock = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

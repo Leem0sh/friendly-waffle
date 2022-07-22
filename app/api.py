@@ -29,7 +29,7 @@ api: Final = NinjaAPI(title="Applift JSON API", version="0.1.0", urls_namespace=
     #             "is returned if the request already exists."
     #     ),
     operation_id="create_product",
-    tags=["database"],
+    tags=["Products"],
     auth=AuthBearer(),
 )
 async def _(
@@ -62,7 +62,7 @@ async def _(
     #             "is returned if the request already exists."
     #     ),
     operation_id="update_record",
-    tags=["database"],
+    tags=["Products"],
     auth=AuthBearer(),
 )
 async def _(
@@ -91,7 +91,7 @@ async def _(
     #     description=()
     operation_id="delete_product",
 
-    tags=["database"],
+    tags=["Products"],
     auth=AuthBearer(),
 )
 async def _(
@@ -123,7 +123,7 @@ async def _(
     #             "is returned if the request already exists."
     #     ),
     operation_id="get_measurement",
-    tags=["database"],
+    tags=["Products"],
     auth=AuthBearer(),
 )
 async def _(
@@ -136,6 +136,7 @@ async def _(
     :param product_id:
     :return:
     """
+
     obj: Product = await get_product(product_id=product_id)
 
     if not obj:
@@ -148,16 +149,17 @@ async def _(
         product_description=obj.description
     ).dict())
 
-# @api.get(
-#     "/measurement/",
-#     # summary="Read existing Measurement",
-#     # description="Read existing Measurement of a Variant.",
-#     # operation_id="read_measurement",
-#     # response=Measurement,
-#     tags=["default"],
-#     auth=AuthBearer(),
-# )
-# async def _(
-#
-# ) -> None:
-#     pass
+
+@api.get(
+    "/offers/",
+    # summary="Product offers",
+    # description="Read existing Measurement of a Variant.",
+    # operation_id="read_measurement",
+    # response=Measurement,
+    tags=["Offers"],
+    auth=AuthBearer(),
+)
+async def _(
+
+) -> None:
+    pass

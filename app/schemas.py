@@ -2,13 +2,12 @@
 # ! python3
 from __future__ import annotations
 
-from typing import TypeAlias
-
 from ninja import Schema
-from pydantic import NonNegativeFloat, constr
+from pydantic import NonNegativeFloat
 from pydantic.types import NonNegativeInt
 
-ContentChecksum: TypeAlias = constr(regex=r"^[a-fA-F0-9]{32}$", min_length=32, max_length=32)
+
+# ContentChecksum: TypeAlias = constr(regex=r"^[a-fA-F0-9]{32}$", min_length=32, max_length=32)
 
 
 class ProductSchema(Schema):

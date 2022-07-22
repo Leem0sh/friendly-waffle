@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
+    'django_cron'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CRON_CLASSES = [
+    "downloader.django_try.Downloader",
+    # ...
 ]
 
 ROOT_URLCONF = 'applift.urls'
@@ -136,4 +142,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECRET_TOKEN = env('SECRET_TOKEN')
 NINJA_BEARER_TOKEN = env('NINJA_BEARER_TOKEN')
 # Base
-APPLIFT_BASE_URL = "https://applifting-python-excercise-ms.herokuapp.com/api/v1"
+APPLIFT_BASE_URL = env('APPLIFT_BASE_URL')

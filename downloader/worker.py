@@ -11,7 +11,7 @@ from typing import Final
 import dotenv
 import httpx
 
-from downloader.downloader_utils.db import database_fetching
+from downloader.downloader_utils.db import database_product_fetching
 from downloader.downloader_utils.http_connections import download_all_products
 
 dotenv.load_dotenv()
@@ -26,11 +26,11 @@ async def main():
 
     :return:
     """
-    products = database_fetching()
+    products = database_product_fetching()
     async with httpx.AsyncClient(headers=HEADERS) as client:
         content = await download_all_products(client, products)
     for p, c in zip(products, content):
-        logger.info(f"{p} {c}")
+        break
 
 
 if __name__ == "__main__":

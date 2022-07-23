@@ -25,20 +25,18 @@ def db_connect() -> psycopg2.extensions.connection:
         password=os.environ.get("DB_PASSWORD"))
 
 
-sql = "SELECT id FROM app_product"
-
-
 def _get_all_products(cursor: psycopg2.extensions.cursor) -> List[str]:
+    sql = """
+        SELECT product_id FROM products"""
     cursor.execute(sql)
     return [row[0] for row in cursor.fetchall()]
 
 
-def database_fetching() -> List[str]:
-    postgres_connection = None
-    cursor = None
+def database_product_fetching() -> List[str]:
+    postgres_connection = db_connect()
+    cursor = postgres_connection.cursor()
     try:
-        postgres_connection = db_connect()
-        cursor = postgres_connection.cursor()
+
         return _get_all_products(cursor=cursor)
 
     except Exception as e:

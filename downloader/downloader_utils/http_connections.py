@@ -20,6 +20,8 @@ from tenacity import (
     wait_exponential,
 )
 
+from downloader.downloader_utils.db import database_product_updating
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +34,7 @@ logger = logging.getLogger(__name__)
     stop=stop_after_delay(30),
     retry=retry_if_exception_type((httpx.HTTPStatusError, httpx.TransportError)),
 )
-async def _download_product(client: AsyncClient, product_id: str):
+async def _download_product(client: AsyncClient, postgres_connection, cursor, product_id: str):
     """
     Download product from applift.
     :param client:
@@ -43,10 +45,13 @@ async def _download_product(client: AsyncClient, product_id: str):
     response = await client.get(
         url=f"{os.environ.get('APPLIFT_BASE_URL').rstrip('/')}/products/{product_id}/offers")
     response.raise_for_status()
-    return response.json()
+    print(product_id, response.json())
+    [database_product_updating(postgres_connection, cursor, product_id, item) for item in response.json()]
+
+    return True
 
 
-async def download_all_products(client: AsyncClient, products: List[str]):
+async def download_all_products(client: AsyncClient, postgres_connection, cursor, products: List[str]):
     """
     Loops over all products and downloads them.
     :param client:
@@ -55,7 +60,7 @@ async def download_all_products(client: AsyncClient, products: List[str]):
     """
     content = await asyncio.gather(
         *(
-            asyncio.create_task(_download_product(client, product))
+            asyncio.create_task(_download_product(client, postgres_connection, cursor, product))
             for product in products
         )
     )

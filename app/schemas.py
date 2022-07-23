@@ -2,6 +2,8 @@
 # ! python3
 from __future__ import annotations
 
+from typing import List
+
 from ninja import Schema
 from pydantic import NonNegativeFloat
 from pydantic.types import NonNegativeInt
@@ -20,6 +22,10 @@ class OfferSchema(Schema):
     offer_id: str
     offer_price: NonNegativeFloat
     offer_items_in_stock: NonNegativeInt
+
+
+class OfferSchemas(Schema):
+    offers: List[OfferSchema]
 
 
 class RegisterResponseSchema(Schema):

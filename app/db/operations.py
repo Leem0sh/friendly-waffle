@@ -4,12 +4,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Final, Dict, Tuple
+from typing import Final, Dict, Tuple, List
 
 from asgiref.sync import sync_to_async
 from django.db import IntegrityError
 
-from app.models import Product
+from app.models import Product, Offer
 from app.schemas import ProductSchema
 
 logger: Final = logging.getLogger(__name__)
@@ -44,3 +44,10 @@ def update_product(product: ProductSchema) -> bool:
         obj.save()
         return True
     return False
+
+
+@sync_to_async
+def get_offers(product_id: str) -> List[Offer]:
+    offers = Offer.objects.all().filter(product_id=product_id).values()
+
+    return list(offers)

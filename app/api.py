@@ -12,7 +12,7 @@ from ninja import NinjaAPI
 from ninja.errors import HttpError
 
 from app.api_auth import AuthBearer
-from app.db.operations import create_product, delete_product, get_product, update_product
+from app.db.operations import create_product, delete_product, get_product, update_product, get_offers
 from app.models import Product
 from app.schemas import ProductSchema
 
@@ -152,14 +152,15 @@ async def _(
 
 @api.get(
     "/offers/",
-    # summary="Product offers",
+    summary="Get product offers",
     # description="Read existing Measurement of a Variant.",
-    # operation_id="read_measurement",
-    # response=Measurement,
+    operation_id="get_offers",
     tags=["Offers"],
     auth=AuthBearer(),
 )
 async def _(
-
-) -> None:
-    pass
+        request: HttpRequest,
+        product_id: str,
+) -> JsonResponse:
+    offers = await get_offers(product_id=product_id)
+    return JsonResponse(status=HTTPStatus.OK, data=offers, safe=False)

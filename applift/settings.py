@@ -144,3 +144,36 @@ SECRET_TOKEN = env('SECRET_TOKEN')
 NINJA_BEARER_TOKEN = env('NINJA_BEARER_TOKEN')
 # Base
 APPLIFT_BASE_URL = env('APPLIFT_BASE_URL')
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": (
+                "[%(asctime)s %(thread)d] %(levelname)s [%(name)s:%(module)s - %(funcName)s:%(lineno)s]"
+                " %(message)s"
+            ),
+            "datefmt": "%d.%m.%Y %H:%M:%S",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        }
+    },
+    "root": {"level": "INFO", "handlers": ["console"]},
+}

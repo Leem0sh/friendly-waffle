@@ -14,6 +14,7 @@ from ninja.errors import HttpError
 from app.api_auth import AuthBearer
 from app.db.operations import create_product, delete_product, get_product, update_product, get_offers
 from app.models import Product
+from app.register import register_new_product
 from app.schemas import ProductSchema
 
 logger: Final = logging.getLogger(__name__)
@@ -24,10 +25,7 @@ api: Final = NinjaAPI(title="Applift JSON API", version="0.1.0", urls_namespace=
 @api.post(
     "/create-product",
     summary="Creates a new product",
-    #     description=(
-    #             f"Creates a new Measurement of a Variant. The status code {HTTPStatus.CONFLICT!r} "
-    #             "is returned if the request already exists."
-    #     ),
+    description="Creates a new product and registers it to the Offer MS.",
     operation_id="create_product",
     tags=["Products"],
     auth=AuthBearer(),
@@ -35,19 +33,26 @@ api: Final = NinjaAPI(title="Applift JSON API", version="0.1.0", urls_namespace=
 async def _(
         request: HttpRequest,
         product: ProductSchema,
-) -> JsonResponse:  # | HttpError?
+) -> JsonResponse:
     """
     Creates a new product.
     :param request:
     :param product:
     :return:
     """
-    logger.info(f"Processing API re,.quest {request.method}")
+    logger.info(f"Processing API request {request.method}")
     created = await create_product(product=product)
     if not created:
-        logger.info(f"Product {product.product_id} already exists")
+        logger.warning(f"Product {product.product_id} already exists")
         raise HttpError(
             status_code=HTTPStatus.CONFLICT, message="This record already exists."
+        )
+    registered = await register_new_product(product=product)
+    if not registered:
+        logger.error(f"Product {product.product_id} created in database but not registered")
+        await delete_product(product_id=product.product_id)
+        raise HttpError(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, message="Unexpected error occurred, please try again later."
         )
 
     logger.info(f"Created product {product.product_id}")
@@ -57,10 +62,7 @@ async def _(
 @api.patch(
     "/update",
     summary="Updates a product",
-    #     description=(
-    #             f"Creates a new Measurement of a Variant. The status code {HTTPStatus.CONFLICT!r} "
-    #             "is returned if the request already exists."
-    #     ),
+    description="Updates a product_name or product_description of a product.",
     operation_id="update_record",
     tags=["Products"],
     auth=AuthBearer(),
@@ -88,9 +90,8 @@ async def _(
 @api.delete(
     "/delete",
     summary="Deletes an existing product",
-    #     description=()
+    description="Deletes an existing product with all offers by its product_id.",
     operation_id="delete_product",
-
     tags=["Products"],
     auth=AuthBearer(),
 )
@@ -118,10 +119,7 @@ async def _(
 @api.get(
     "/get",
     summary="Get a product",
-    #     description=(
-    #             f"Creates a new Measurement of a Variant. The status code {HTTPStatus.CONFLICT!r} "
-    #             "is returned if the request already exists."
-    #     ),
+    description="Get a product by product_id",
     operation_id="get_measurement",
     tags=["Products"],
     auth=AuthBearer(),
@@ -153,7 +151,7 @@ async def _(
 @api.get(
     "/offers/",
     summary="Get product offers",
-    # description="Read existing Measurement of a Variant.",
+    description="Get product offers for a given product",
     operation_id="get_offers",
     tags=["Offers"],
     auth=AuthBearer(),

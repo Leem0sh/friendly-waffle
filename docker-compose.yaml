@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  db:
+  postregsdb:
     image: postgres:latest
     restart: always
     environment:
@@ -10,23 +10,33 @@ services:
     ports:
       - '6543:5432'
     volumes:
-      - db:/var/lib/postgresql/data
-#  api:
-#    container_name: api
-#    build:
-#      context: ./
-#      target: production
-#    image: api
-#    depends_on:
-#      - db
-#    ports:
-#      - 8000:8000
-#    environment:
-#      NODE_ENV: production
-#    links:
-#      - db
-#    volumes:
-#      - './:/src'
+      - postregsdb:/var/lib/postgresql/data
+
+  api:
+    container_name: applift_api
+    build:
+      context: ./
+    image: applift_api
+    depends_on:
+      - postregsdb
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_NAME=pg
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    links:
+      - postregsdb
+    volumes:
+      - './:/src'
+    networks:
+      - net
+
+
 volumes:
-  db:
+  postregsdb:
     driver: local
+
+networks:
+  net:
+    driver: bridge

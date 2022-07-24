@@ -11,7 +11,7 @@ from typing import List, Dict
 
 import psycopg2
 
-from downloader.downloader_utils.sql_commands import sql_get_products_command, sql_update_command
+from downloader.sql_commands import sql_get_products_command, sql_update_command
 
 logger = logging.getLogger(__name__)
 

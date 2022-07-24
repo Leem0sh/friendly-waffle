@@ -20,7 +20,7 @@ from tenacity import (
     wait_exponential,
 )
 
-from downloader.downloader_utils.db import database_product_updating
+from downloader.db import database_product_updating
 
 logger = logging.getLogger(__name__)
 

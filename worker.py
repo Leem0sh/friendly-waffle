@@ -11,9 +11,9 @@ from typing import Final
 import dotenv
 import httpx
 
-from downloader.downloader_utils.db import db_connect, database_product_fetching
-from downloader.downloader_utils.http_connections import download_all_products
-from downloader.downloader_utils.setups import setup_logging
+from downloader.db import db_connect, database_product_fetching
+from downloader.http_connections import download_all_products
+from downloader.setups import setup_logging
 
 dotenv.load_dotenv()
 setup_logging()

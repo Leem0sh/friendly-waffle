@@ -7,6 +7,7 @@ import logging
 from typing import Final, Dict, Tuple, List
 
 from asgiref.sync import sync_to_async
+from django.db import IntegrityError
 from django.db.models import QuerySet
 
 from app.models import Product, Offer
@@ -85,7 +86,7 @@ def get_offers(product_id: str) -> List[QuerySet | QuerySet[Offer]]:
     logger.info(f"Getting offers for product {product_id} from database")
     try:
         offers = Offer.objects.all().filter(product_id=product_id).values()
-    except Exception as e:
+    except IntegrityError as e:
         logger.error(e)
         raise e
 

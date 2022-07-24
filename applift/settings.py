@@ -13,7 +13,6 @@ from pathlib import Path
 
 import environ
 
-# TODO LOGGING CONFIGURATION
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +24,19 @@ env = environ.Env()
 env.read_env(str(BASE_DIR / ".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^0q5$i@xom23%5$_0^gamweg*s8$+#5s#1*6@2@_4*j7uedo5e'
+
+# Secrets
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_TOKEN = env('SECRET_TOKEN')
+NINJA_BEARER_TOKEN = env('NINJA_BEARER_TOKEN')
+
+# Base
+APPLIFT_BASE_URL = env('APPLIFT_BASE_URL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
@@ -78,17 +84,6 @@ WSGI_APPLICATION = 'applift.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-# TODO DB env vars
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': env('DB_NAME'),
-#         'USER': env('DB_USER'),
-#         'PASSWORD': env('DB_PASSWORD'),
-#         'HOST': env('DB_HOST'),
-#         'PORT': env('DB_PORT'),
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -122,8 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Prague"
 
 USE_I18N = True
 
@@ -140,13 +134,6 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# TODO Naming
-# Secrets
-SECRET_TOKEN = env('SECRET_TOKEN')
-NINJA_BEARER_TOKEN = env('NINJA_BEARER_TOKEN')
-# Base
-APPLIFT_BASE_URL = env('APPLIFT_BASE_URL')
 
 LOGGING = {
     "version": 1,

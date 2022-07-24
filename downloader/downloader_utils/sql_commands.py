@@ -3,6 +3,10 @@
 
 from __future__ import annotations
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 sql_update_command = """INSERT INTO app_offer (id, price, items_in_stock, product_id)
 VALUES(%s, %s, %s, %s) 
 ON CONFLICT (id) 

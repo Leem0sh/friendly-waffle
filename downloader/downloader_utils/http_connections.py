@@ -45,7 +45,8 @@ async def _download_product(client: AsyncClient, postgres_connection, cursor, pr
     response = await client.get(
         url=f"{os.environ.get('APPLIFT_BASE_URL').rstrip('/')}/products/{product_id}/offers")
     response.raise_for_status()
-    print(product_id, response.json())
+    logger.info(f"Downloaded product {product_id}")
+    logger.info(f"Updating product {product_id}")
     [database_product_updating(postgres_connection, cursor, product_id, item) for item in response.json()]
 
     return True

@@ -7,9 +7,11 @@ import logging
 from http import HTTPStatus
 from typing import Final
 
+import httpx
 from django.http import HttpRequest, JsonResponse
 from ninja import NinjaAPI
 from ninja.errors import HttpError
+from pydantic import PositiveInt
 
 from app.api_auth import AuthBearer
 from app.db.operations import create_product, delete_product, get_product, update_product, get_offers
@@ -18,10 +20,10 @@ from app.register import register_new_product
 from app.schemas import ProductSchema
 
 logger: Final = logging.getLogger(__name__)
+
 api: Final = NinjaAPI(title="Applift JSON API", version="0.1.0", urls_namespace="applift-api")
 
 
-# TODO
 @api.post(
     "/create-product",
     summary="Creates a new product",
@@ -47,8 +49,10 @@ async def _(
         raise HttpError(
             status_code=HTTPStatus.CONFLICT, message="This record already exists."
         )
-    registered = await register_new_product(product=product)
-    if not registered:
+    try:
+        async with httpx.AsyncClient() as http_client:
+            await register_new_product(http_client=http_client, product=product)
+    except (httpx.HTTPStatusError, httpx.TransportError):
         logger.error(f"Product {product.product_id} created in database but not registered")
         await delete_product(product_id=product.product_id)
         raise HttpError(
@@ -77,7 +81,7 @@ async def _(
     :param product:
     :return:
     """
-    logger.info(f"Processing API request {request.method}")
+    logger.info(f"Processing API request {request.method} for product {product.product_id}")
     updated = await update_product(product=product)
     if not updated:
         logger.info(f"Product {product.product_id} not found")
@@ -97,7 +101,7 @@ async def _(
 )
 async def _(
         request: HttpRequest,
-        product_id: str,
+        product_id: PositiveInt,
 ) -> JsonResponse:
     """
     Deletes an existing product.
@@ -126,7 +130,7 @@ async def _(
 )
 async def _(
         request: HttpRequest,
-        product_id: str,
+        product_id: PositiveInt,
 ) -> JsonResponse:
     """
     Get a product.
@@ -134,6 +138,7 @@ async def _(
     :param product_id:
     :return:
     """
+    logger.info(f"Processing API request {request.method} for product {product_id}")
 
     obj: Product = await get_product(product_id=product_id)
 
@@ -158,7 +163,9 @@ async def _(
 )
 async def _(
         request: HttpRequest,
-        product_id: str,
+        product_id: PositiveInt,
 ) -> JsonResponse:
+    logger.info(f"Processing API request {request.method} for product {product_id}")
+
     offers = await get_offers(product_id=product_id)
     return JsonResponse(status=HTTPStatus.OK, data=offers, safe=False)

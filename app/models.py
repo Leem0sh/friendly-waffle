@@ -1,9 +1,8 @@
 from django.db import models
 
 
-# TODO UUID field / adjust max len?
 class Product(models.Model):
-    id = models.CharField(max_length=255, primary_key=True)
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -11,9 +10,8 @@ class Product(models.Model):
         return self.name
 
 
-# TODO UUID field / adjust max len?
 class Offer(models.Model):
-    id = models.CharField(max_length=255, primary_key=True)
+    id = models.IntegerField(primary_key=True)
     price = models.FloatField()
     items_in_stock = models.IntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

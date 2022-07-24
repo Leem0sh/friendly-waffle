@@ -15,6 +15,7 @@ COPY  ./app /app/app
 COPY  ./applift /app/applift
 COPY  ./downloader /app/downloader
 COPY  ./worker.py /app/worker.py
+# for non-production env only
 COPY  ./.env /app/.env
 
 EXPOSE 8000

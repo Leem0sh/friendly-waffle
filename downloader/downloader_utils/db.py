@@ -50,7 +50,6 @@ def database_product_updating(postgres_connection: psycopg2.extensions.connectio
                               product: str,
                               offer: Dict[str, str]):
     try:
-
         return update_offers(postgres_connection, cursor, product, offer)
 
     except Exception as e:
@@ -66,6 +65,6 @@ def update_offers(postgres_connection: psycopg2.extensions.connection,
     price = offer["price"]
     items_in_stock = offer["items_in_stock"]
     product_id = product
-
     cursor.execute(sql_update_command, (_id, price, items_in_stock, product_id, price, items_in_stock))
     postgres_connection.commit()
+    logger.info(f"Offer of product: {product_id} with id: {_id} updated")

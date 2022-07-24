@@ -21,6 +21,7 @@ async def create_product(product: ProductSchema) -> bool:
     :param product:
     :return:
     """
+    logger.info(f"Adding product {product.product_id} to database")
     try:
         _, created = await sync_to_async(Product.objects.get_or_create)(id=product.product_id,
                                                                         name=product.product_name,
@@ -39,6 +40,8 @@ def delete_product(product_id: str) -> Tuple[int, Dict[str, int]]:
     :param product_id:
     :return:
     """
+    logger.info(f"Deleting product {product_id} from database")
+
     return Product.objects.all().filter(id=product_id).delete()
 
 
@@ -49,6 +52,8 @@ def get_product(product_id: str) -> Product:
     :param product_id:
     :return:
     """
+    logger.info(f"Getting product {product_id} from database")
+
     return Product.objects.all().filter(id=product_id).first()
 
 
@@ -59,10 +64,12 @@ def update_product(product: ProductSchema) -> bool:
     :param product:
     :return:
     """
+
     obj = Product.objects.all().filter(id=product.product_id).first()
     if obj:
         obj.name = product.product_name
         obj.description = product.product_description
+        logger.info(f"Updating product with ID={product.product_id} in database to {obj.name} | {obj.description}")
         obj.save()
         return True
     return False
@@ -75,5 +82,11 @@ def get_offers(product_id: str) -> List[QuerySet | QuerySet[Offer]]:
     :param product_id:
     :return:
     """
-    offers = Offer.objects.all().filter(product_id=product_id).values()
+    logger.info(f"Getting offers for product {product_id} from database")
+    try:
+        offers = Offer.objects.all().filter(product_id=product_id).values()
+    except Exception as e:
+        logger.error(e)
+        raise e
+
     return list(offers)

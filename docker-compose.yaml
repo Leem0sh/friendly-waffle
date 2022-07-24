@@ -1,42 +1,39 @@
 version: '3.8'
 services:
-  postregsdb:
+  postgresdb:
     image: postgres:latest
     restart: always
     environment:
-      - DATABASE_NAME=pg
+      - DATABASE_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - '6543:5432'
     volumes:
-      - postregsdb:/var/lib/postgresql/data
+      - postgresdb:/var/lib/postgresql/data
 
   api:
     container_name: applift_api
     build:
       context: ./
+    entrypoint: [ "/bin/sh","-c" ]
+    command:
+      - (crontab -l 2>/dev/null; echo "* * * * * cd /app; /usr/local/bin/python worker.py") | crontab - && service cron start && gunicorn applift.asgi:application --bind=0.0.0.0:8000 --workers=2 --preload --worker-class=uvicorn.workers.UvicornWorker --log-level=INFO
     image: applift_api
     depends_on:
-      - postregsdb
+      - postgresdb
     ports:
       - 8000:8000
     environment:
-      - DATABASE_NAME=pg
+      - DATABASE_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     links:
-      - postregsdb
+      - postgresdb
     volumes:
       - './:/src'
-    networks:
-      - net
-
 
 volumes:
-  postregsdb:
+  postgresdb:
     driver: local
 
-networks:
-  net:
-    driver: bridge

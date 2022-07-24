@@ -7,7 +7,6 @@ import logging
 from typing import Final, Dict, Tuple, List
 
 from asgiref.sync import sync_to_async
-from django.db import IntegrityError
 from django.db.models import QuerySet
 
 from app.models import Product, Offer
@@ -23,12 +22,14 @@ async def create_product(product: ProductSchema) -> bool:
     :return:
     """
     try:
-        await sync_to_async(Product.objects.create)(id=product.product_id,
-                                                    name=product.product_name,
-                                                    description=product.product_description)
-        return True
-    except IntegrityError:
-        return False
+        _, created = await sync_to_async(Product.objects.get_or_create)(id=product.product_id,
+                                                                        name=product.product_name,
+                                                                        description=product.product_description)
+
+        return created
+    except Exception as e:
+        logger.error(e)
+        raise e
 
 
 @sync_to_async

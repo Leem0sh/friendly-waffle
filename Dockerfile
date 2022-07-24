@@ -1,4 +1,7 @@
-FROM python:3.10.4
+FROM python:3.10.5
+
+ENV PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get -y install cron
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -11,6 +14,7 @@ COPY  ./manage.py /app/manage.py
 COPY  ./app /app/app
 COPY  ./applift /app/applift
 COPY  ./downloader /app/downloader
+COPY  ./worker.py /app/worker.py
 COPY  ./.env /app/.env
 
 EXPOSE 8000

@@ -23,11 +23,11 @@ def db_connect() -> psycopg2.extensions.connection:
     :return: connection client
     """
     return psycopg2.connect(
-        host=os.environ.get("DB_HOST"),
-        port=os.environ.get("DB_PORT"),
-        database=os.environ.get("DB_NAME"),
-        user=os.environ.get("DB_USER"),
-        password=os.environ.get("DB_PASSWORD"))
+        host=os.environ.get("POSTGRES_HOST"),
+        port=os.environ.get("POSTGRES_PORT"),
+        database=os.environ.get("DATABASE_NAME"),
+        user=os.environ.get("POSTGRES_USER"),
+        password=os.environ.get("POSTGRES_PASSWORD"))
 
 
 def _get_all_products(cursor: psycopg2.extensions.cursor) -> List[str]:

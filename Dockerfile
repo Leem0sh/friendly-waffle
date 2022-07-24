@@ -1,7 +1,6 @@
 FROM python:3.10.5
 
 ENV PYTHONUNBUFFERED=1
-RUN apt-get update && apt-get -y install cron
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -9,6 +8,10 @@ WORKDIR /app
 COPY ./requirements/base.txt /requirements/
 RUN pip install --isolated --no-input --compile --exists-action=a -r /requirements/base.txt \
     && rm -rf /requirements/base.txt
+
+# Cron installation
+RUN apt-get update && apt-get -y install cron
+
 
 COPY  ./manage.py /app/manage.py
 COPY  ./app /app/app

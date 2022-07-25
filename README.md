@@ -12,7 +12,7 @@
 
 ### Secrets - create .env file
 
-    SECRET_KEY=<SECRET KEY>
+    DJANGO_SECRET_KEY=<SECRET KEY>
     SECRET_TOKEN=token
     POSTGRES_HOST=postgresdb
     POSTGRES_PORT=5432

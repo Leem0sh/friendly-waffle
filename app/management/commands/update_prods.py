@@ -6,7 +6,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-from typing import List, Final
+from typing import List, Final, Dict
 
 import httpx
 from asgiref.sync import sync_to_async
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
     stop=stop_after_delay(30),
     retry=retry_if_exception_type((httpx.HTTPStatusError, httpx.TransportError)),
 )
-async def _download_product(client: AsyncClient, product_id: PositiveInt):
+async def _download_product_offers(client: AsyncClient, product_id: PositiveInt) -> List[Dict[str, PositiveInt | str]]:
     """
     Download product from applift.
     :param client:
@@ -50,13 +50,11 @@ async def _download_product(client: AsyncClient, product_id: PositiveInt):
         url=f"{os.environ.get('APPLIFT_BASE_URL').rstrip('/')}/products/{product_id}/offers")
     response.raise_for_status()
     logger.info(f"Downloaded product {product_id}")
-    # [database_product_updating(product_id, item) for item in response.json()]
-
     return response.json()
 
 
 @sync_to_async
-def update_offers(product_id: PositiveInt, product_offers: List[dict]) -> bool:
+def _update_db_offers(product_id: PositiveInt, product_offers: List[dict]) -> bool:
     """
     Updates all offers.
     """
@@ -80,20 +78,20 @@ def update_offers(product_id: PositiveInt, product_offers: List[dict]) -> bool:
         raise e
 
 
-async def product_update(client: AsyncClient, product_id: PositiveInt):
+async def _product_update_process(client: AsyncClient, product_id: PositiveInt):
     """
     Updates all products.
     :param client:
     :param products:
     :return:
     """
-    new_product_offers = await _download_product(client, product_id)
-    return await update_offers(product_id, new_product_offers)
+    new_product_offers = await _download_product_offers(client, product_id)
+    return await _update_db_offers(product_id, new_product_offers)
 
 
 async def _update_all_product_offers(products: List[int]):
     """
-    Loops over all products and downloads them.
+    Loops over all products, downloads them and updates/creates new offers.
     :param client:
     :param products:
     :return:
@@ -103,7 +101,7 @@ async def _update_all_product_offers(products: List[int]):
     async with httpx.AsyncClient(headers=headers) as client:
         content = await asyncio.gather(
             *(
-                asyncio.create_task(product_update(client, product_offers))
+                asyncio.create_task(_product_update_process(client, product_offers))
                 for product_offers in products
             )
         )
@@ -114,11 +112,16 @@ class Command(BaseCommand):
     help = 'Updates all offers'
 
     def _get_all_products(self) -> List[PositiveInt]:
+        """
+        Returns all products from database.
+        """
         qs = Product.objects.all().values_list("id", flat=True)
         return list(qs)
 
     def handle(self, *args, **options):
+        """
+        Command for updating all offers of all products.
+        """
         products: List[PositiveInt] = self._get_all_products()
-        print(products)
-        all_products = asyncio.run(_update_all_product_offers(products))
-        print(all_products)
+        asyncio.run(_update_all_product_offers(products))
+        logger.info(f"Finished")

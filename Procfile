@@ -1,1 +1,1 @@
-web: gunicorn applift.asgi:application --bind=0.0.0.0:8000 --workers=2 --preload --worker-class=uvicorn.workers.UvicornWorker --log-level=INFO
+web: gunicorn applift.asgi:application --workers=2 --preload --worker-class=uvicorn.workers.UvicornWorker --log-level=INFO

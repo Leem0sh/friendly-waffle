@@ -1,6 +1,8 @@
 FROM python:3.10.5
 
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+#ENV PORT 8000
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -16,7 +18,7 @@ RUN apt-get update && apt-get -y install cron
 COPY  ./manage.py /app/manage.py
 COPY  ./app /app/app
 COPY  ./applift /app/applift
-# for non-production env only
+# for local dev only
 COPY  ./.env /app/.env
 
 EXPOSE 8000

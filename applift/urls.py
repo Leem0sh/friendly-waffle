@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import path
 
 from app.api import api as applift_api
+from app.views import ping
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/applift/", applift_api.urls),
-
+    path('ping/', ping, name="ping"),
 ]

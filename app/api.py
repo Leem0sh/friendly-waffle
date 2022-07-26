@@ -14,7 +14,8 @@ from ninja.errors import HttpError
 from pydantic import PositiveInt
 
 from app.api_auth import AuthBearer
-from app.db.operations import create_product, delete_product, get_product, update_product, get_offers
+from app.db.operations import create_product, delete_product, get_product, update_product, get_offers_for_product, \
+    get_all_products
 from app.models import Product
 from app.register import register_new_product
 from app.schemas import ProductSchema
@@ -124,7 +125,7 @@ async def _(
     "/get",
     summary="Get a product",
     description="Get a product by product_id",
-    operation_id="get_measurement",
+    operation_id="get_product",
     tags=["Products"],
     auth=AuthBearer(),
 )
@@ -154,6 +155,34 @@ async def _(
 
 
 @api.get(
+    "/get-all-products",
+    summary="Get all products",
+    description="Get a products from database",
+    operation_id="get_all_products",
+    tags=["Products"],
+    auth=AuthBearer(),
+    # include_in_schema=False
+)
+async def _(
+        request: HttpRequest,
+) -> JsonResponse:
+    """
+    Get all products.
+    :param request:
+    :return:
+    """
+    logger.info(f"Processing API request {request.method} to get all products")
+
+    obj = await get_all_products()
+    logger.info(f"Retrieved all products {obj}")
+    data = [ProductSchema(product_id=product["id"],
+                          product_name=product["name"],
+                          product_description=product["description"]).dict() for product in obj]
+
+    return JsonResponse(data=data, safe=False)
+
+
+@api.get(
     "/offers/",
     summary="Get product offers",
     description="Get product offers for a given product",
@@ -167,5 +196,5 @@ async def _(
 ) -> JsonResponse:
     logger.info(f"Processing API request {request.method} for product {product_id}")
 
-    offers = await get_offers(product_id=product_id)
+    offers = await get_offers_for_product(product_id=product_id)
     return JsonResponse(status=HTTPStatus.OK, data=offers, safe=False)

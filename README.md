@@ -1,5 +1,7 @@
 # Friendly-waffle
 
+Apllcation in also deployed on Heroku: https://intense-ravine-66190.herokuapp.com/
+
 ### How to use it
 
 1. `git clone https://github.com/Leem0sh/friendly-waffle.git` to clone the repository
@@ -9,6 +11,11 @@
 5. `docker exec -it <CONTAINER ID> python manage.py migrate` to create the database
 6. visit `http://localhost:8000/api/applift/docs`
 7. enjoy
+
+### Troubleshooting
+
+Since django-heroku is messing with logging and is not needed for local development,
+it is recommended to disable it by commenting it in the settings.py file.
 
 ### Secrets - create .env file
 
@@ -44,6 +51,15 @@ curl -X 'POST' \
 ```
 curl -X 'GET' \
   'http://127.0.0.1:8000/api/applift/get?product_id=111' \
+  -H 'accept: */*' \
+  -H 'Authorization: Bearer supersecret'
+```
+
+#### Get all products (GET)
+
+```
+curl -X 'GET' \
+  'http://127.0.0.1:8000/api/applift/get-all-products' \
   -H 'accept: */*' \
   -H 'Authorization: Bearer supersecret'
 ```

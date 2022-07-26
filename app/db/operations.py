@@ -59,6 +59,17 @@ def get_product(product_id: str) -> Product:
 
 
 @sync_to_async
+def get_all_products() -> List[QuerySet]:
+    """
+    Gets all products with all properties.
+    :return:
+    """
+    logger.info(f"Getting all products from database")
+    products = Product.objects.all().values()
+    return list(products)
+
+
+@sync_to_async
 def update_product(product: ProductSchema) -> bool:
     """
     Updates a product.
@@ -77,7 +88,7 @@ def update_product(product: ProductSchema) -> bool:
 
 
 @sync_to_async
-def get_offers(product_id: str) -> List[QuerySet | QuerySet[Offer]]:
+def get_offers_for_product(product_id: str) -> List[QuerySet | QuerySet[Offer]]:
     """
     Get all offers for a product.
     :param product_id:

@@ -89,7 +89,7 @@ async def _product_update_process(client: AsyncClient, product_id: PositiveInt):
     return await _update_db_offers(product_id, new_product_offers)
 
 
-async def _update_all_product_offers(products: List[int]):
+async def _update_all_product_offers(products: List[PositiveInt]):
     """
     Loops over all products, downloads them and updates/creates new offers.
     :param client:

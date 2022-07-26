@@ -3,7 +3,7 @@
 
 from django.test import TestCase
 
-from app.db.operations import create_product, delete_product, get_product, update_product, get_offers
+from app.db.operations import create_product, delete_product, get_product, update_product, get_offers_for_product
 from app.models import Product, Offer
 from app.schemas import ProductSchema
 
@@ -21,13 +21,6 @@ class DatabaseTestCase(TestCase):
         created = await create_product(product=product)
         self.assertFalse(created)
 
-    async def test_create_product(self):
-        product = ProductSchema(product_id=123, product_name="Product 3", product_description="Description 3")
-        created = await create_product(product=product)
-        self.assertTrue(created)
-        created = await create_product(product=product)
-        self.assertFalse(created)
-
     async def test_get_product(self):
         product = await get_product(product_id=1)
         self.assertEqual(product.id, 1)
@@ -40,8 +33,8 @@ class DatabaseTestCase(TestCase):
         self.assertEqual(updated_data.name, "Product XX")
         self.assertEqual(updated_data.description, "Descrrrr")
 
-    async def test_get_offers(self):
-        offers = await get_offers(product_id=1)
+    async def test_get_offers_for_product(self):
+        offers = await get_offers_for_product(product_id=1)
         self.assertEqual(len(offers), 1)
 
     async def test_delete_product(self):

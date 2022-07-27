@@ -64,7 +64,7 @@ def get_all_products() -> List[QuerySet]:
     Gets all products with all properties.
     :return:
     """
-    logger.info(f"Getting all products from database")
+    logger.info("Getting all products from database")
     products = Product.objects.all().values()
     return list(products)
 

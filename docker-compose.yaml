@@ -3,10 +3,6 @@ services:
   postgresdb:
     image: postgres:latest
     restart: always
-    environment:
-      - DATABASE_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
     ports:
       - '6543:5432'
     volumes:
@@ -24,10 +20,6 @@ services:
       - postgresdb
     ports:
       - 8000:8000
-    environment:
-      - DATABASE_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
     links:
       - postgresdb
     volumes:

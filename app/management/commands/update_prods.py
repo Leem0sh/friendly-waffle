@@ -78,17 +78,6 @@ def _update_db_offers(product_id: PositiveInt, product_offers: List[dict]) -> bo
         raise e
 
 
-async def _product_update_process(client: AsyncClient, product_id: PositiveInt):
-    """
-    Updates all products.
-    :param client:
-    :param products:
-    :return:
-    """
-    new_product_offers = await _download_product_offers(client, product_id)
-    return await _update_db_offers(product_id, new_product_offers)
-
-
 async def _update_all_product_offers(products: List[PositiveInt]):
     """
     Loops over all products, downloads them and updates/creates new offers.
@@ -99,13 +88,18 @@ async def _update_all_product_offers(products: List[PositiveInt]):
     headers: Final = {"Bearer": os.environ.get("SECRET_TOKEN")}
 
     async with httpx.AsyncClient(headers=headers) as client:
-        content = await asyncio.gather(
+        product_offers = await asyncio.gather(
             *(
-                asyncio.create_task(_product_update_process(client, product_offers))
-                for product_offers in products
+                asyncio.create_task(_download_product_offers(client, product))
+                for product in products
             )
         )
-        return content
+        return product_offers
+
+
+async def _update_process(products, new_product_offers):
+    for product, product_offer in zip(products, new_product_offers):
+        await _update_db_offers(product, product_offer)
 
 
 class Command(BaseCommand):
@@ -123,5 +117,7 @@ class Command(BaseCommand):
         Command for updating all offers of all products.
         """
         products: List[PositiveInt] = self._get_all_products()
-        asyncio.run(_update_all_product_offers(products))
+        new_product_offers = asyncio.run(_update_all_product_offers(products))
+        asyncio.run(_update_process(products, new_product_offers))
+
         logger.info(f"Finished")

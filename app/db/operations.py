@@ -9,6 +9,7 @@ from typing import Final, Dict, Tuple, List
 from asgiref.sync import sync_to_async
 from django.db import IntegrityError
 from django.db.models import QuerySet
+from pydantic import PositiveInt
 
 from app.models import Product, Offer
 from app.schemas import ProductSchema
@@ -35,7 +36,7 @@ async def create_product(product: ProductSchema) -> bool:
 
 
 @sync_to_async
-def delete_product(product_id: str) -> Tuple[int, Dict[str, int]]:
+def delete_product(product_id: PositiveInt) -> Tuple[int, Dict[str, int]]:
     """
     Deletes a product.
     :param product_id:
@@ -43,11 +44,11 @@ def delete_product(product_id: str) -> Tuple[int, Dict[str, int]]:
     """
     logger.info(f"Deleting product {product_id} from database")
 
-    return Product.objects.all().filter(id=product_id).delete()
+    return Product.objects.get(id=product_id).delete()
 
 
 @sync_to_async
-def get_product(product_id: str) -> Product:
+def get_product(product_id: PositiveInt) -> Product | None:
     """
     Gets a product by its unique ID.
     :param product_id:
@@ -55,7 +56,7 @@ def get_product(product_id: str) -> Product:
     """
     logger.info(f"Getting product {product_id} from database")
 
-    return Product.objects.all().filter(id=product_id).first()
+    return Product.objects.get(id=product_id)
 
 
 @sync_to_async
@@ -70,21 +71,18 @@ def get_all_products() -> List[QuerySet]:
 
 
 @sync_to_async
-def update_product(product: ProductSchema) -> bool:
+def update_product(product: ProductSchema) -> None:
     """
     Updates a product.
     :param product:
-    :return:
+    :return: Returns true if the product was updated, false if the product was not found.
     """
 
-    obj = Product.objects.all().filter(id=product.product_id).first()
-    if obj:
-        obj.name = product.product_name
-        obj.description = product.product_description
-        logger.info(f"Updating product with ID={product.product_id} in database to {obj.name} | {obj.description}")
-        obj.save()
-        return True
-    return False
+    obj = Product.objects.get(id=product.product_id)
+    obj.name = product.product_name
+    obj.description = product.product_description
+    logger.info(f"Updating product with ID={product.product_id} in database to {obj.name} | {obj.description}")
+    obj.save()
 
 
 @sync_to_async

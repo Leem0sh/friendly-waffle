@@ -94,7 +94,7 @@ def get_offers_for_product(product_id: str) -> List[QuerySet | QuerySet[Offer]]:
     """
     logger.info(f"Getting offers for product {product_id} from database")
     try:
-        offers = Offer.objects.all().filter(product_id=product_id).values()
+        offers = Offer.objects.values().filter(product_id=product_id)
     except IntegrityError as e:
         logger.error(e)
         raise e

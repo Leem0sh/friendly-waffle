@@ -25,6 +25,10 @@ class DatabaseTestCase(TestCase):
         product = await get_product(product_id=1)
         self.assertEqual(product.id, 1)
 
+    async def test_get_product_does_not_exist(self):
+        with self.assertRaises(Product.DoesNotExist):
+            await get_product(product_id=99)
+
     async def test_update_product(self):
         product = ProductSchema(product_id=1, product_name="Product XX", product_description="Descrrrr")
         await update_product(product=product)

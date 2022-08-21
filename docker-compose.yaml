@@ -15,7 +15,7 @@ services:
     entrypoint: [ "/bin/sh","-c" ]
     command:
       - (crontab -l 2>/dev/null; echo "* * * * * cd /app; /usr/local/bin/python manage.py update_prods") | crontab - && service cron start && gunicorn applift.asgi:application --bind=0.0.0.0:8000 --workers=2 --preload --worker-class=uvicorn.workers.UvicornWorker --log-level=INFO
-    image: applift_api
+    image: friendly-waffle:latest
     depends_on:
       - postgresdb
     ports:

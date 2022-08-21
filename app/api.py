@@ -83,11 +83,10 @@ async def _(
     :return:
     """
     logger.info(f"Processing API request {request.method} for product {product.product_id}")
-    updated = await update_product(product=product)
-    if not updated:
-        logger.info(f"Product {product.product_id} not found")
+    try:
+        await update_product(product=product)
+    except Product.DoesNotExist:
         return JsonResponse(status=HTTPStatus.NOT_FOUND, data={"message": "Product not found"})
-
     logger.info(f"Updated product {product.product_id}")
     return JsonResponse(status=HTTPStatus.OK, data={"message": "Product updated"})
 
@@ -141,11 +140,12 @@ async def _(
     """
     logger.info(f"Processing API request {request.method} for product {product_id}")
 
-    obj: Product = await get_product(product_id=product_id)
-
-    if not obj:
-        logger.info(f"Product {product_id} not found")
+    try:
+        obj: Product = await get_product(product_id=product_id)
+    except Product.DoesNotExist:
+        logger.warning(f"Product {product_id} does not exist")
         return JsonResponse(status=HTTPStatus.NOT_FOUND, data={"message": "Product not found"})
+
     logger.info(f"Retrieved product {product_id}")
     return JsonResponse(status=HTTPStatus.OK, data=ProductSchema(
         product_id=obj.id,

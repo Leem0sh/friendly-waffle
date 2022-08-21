@@ -170,5 +170,4 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
-# not working for local development?
 django_heroku.settings(locals())

@@ -14,8 +14,8 @@ Apllcation in also deployed on Heroku: https://intense-ravine-66190.herokuapp.co
     POSTGRES_USER=postgres
     POSTGRES_PASSWORD=postgres
     DATABASE_NAME=postgres
-    NINJA_BEARER_TOKEN=supersecret
-    APPLIFT_BASE_URL=https://applifting-python-excercise-ms.herokuapp.com/api/v1
+    NINJA_BEARER_TOKEN=secrettoken
+    APPLIFT_BASE_URL=https://<url>.com
    ```
 3. `docker build -t friendly-waffle:latest .` to build the image
 4. `docker-compose -f docker-compose.yaml up -d` to start the containers
@@ -37,7 +37,7 @@ it is recommended to disable it by commenting it in the settings.py file.
 curl -X 'POST' \
   'http://127.0.0.1:8000/api/applift/create-product' \
   -H 'accept: */*' \
-  -H 'Authorization: Bearer supersecret' \
+  -H 'Authorization: Bearer secrettoken' \
   -H 'Content-Type: application/json' \
   -d '{
   "product_id": 111,
@@ -52,7 +52,7 @@ curl -X 'POST' \
 curl -X 'GET' \
   'http://127.0.0.1:8000/api/applift/get?product_id=111' \
   -H 'accept: */*' \
-  -H 'Authorization: Bearer supersecret'
+  -H 'Authorization: Bearer secrettoken'
 ```
 
 #### Get all products (GET)
@@ -61,7 +61,7 @@ curl -X 'GET' \
 curl -X 'GET' \
   'http://127.0.0.1:8000/api/applift/get-all-products' \
   -H 'accept: */*' \
-  -H 'Authorization: Bearer supersecret'
+  -H 'Authorization: Bearer secrettoken'
 ```
 
 #### Update product by ID (PATCH)
@@ -70,7 +70,7 @@ curl -X 'GET' \
 curl -X 'PATCH' \
   'http://127.0.0.1:8000/api/applift/update' \
   -H 'accept: */*' \
-  -H 'Authorization: Bearer supersecret' \
+  -H 'Authorization: Bearer secrettoken' \
   -H 'Content-Type: application/json' \
   -d '{
   "product_id": 111,
@@ -85,7 +85,7 @@ curl -X 'PATCH' \
 curl -X 'DELETE' \
   'http://127.0.0.1:8000/api/applift/delete?product_id=111' \
   -H 'accept: */*' \
-  -H 'Authorization: Bearer supersecret'
+  -H 'Authorization: Bearer secrettoken'
 
 ```
 
@@ -97,5 +97,5 @@ curl -X 'DELETE' \
 curl -X 'GET' \
   'http://127.0.0.1:8000/api/applift/offers/?product_id=111' \
   -H 'accept: */*' \
-  -H 'Authorization: Bearer supersecret'
+  -H 'Authorization: Bearer secrettoken'
 ```
